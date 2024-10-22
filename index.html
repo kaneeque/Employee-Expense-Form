@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Expense Reimbursement Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 35%;
+            margin: auto;
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgb(136, 133, 133);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .form-row .form-group:last-child {
+            margin-right: 0;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex-grow: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .file-input-wrapper .remove-file {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+            display: none;
+        }
+
+        .submit-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .submit-btn button {
+            background-color: #004476;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .submit-btn button:hover {
+            background-color: #e78e03;
+        }
+
+        #expenseContainer,
+        #fileContainer {
+            margin-bottom: 15px;
+        }
+
+        .add-btn {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .add-btn button {
+            background-color: #004476;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-btn button:hover {
+            background-color: #e78e03;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <!-- Logo -->
+        <div style="text-align: center; margin-bottom: 10px;">
+            <img src="corpteam_logo.png" alt="Company Logo" width="150">
+        </div>
+
+        <h2 style="color: #004476;">Employee Expense Reimbursement Form</h2>
+        <form action="expense.php" method="POST" id="reimbursementForm" enctype="multipart/form-data">
+            <!-- Employee Details Section -->
+            <div class="form-group">
+                <label for="employeeId">Employee ID:</label>
+                <input type="text" id="employeeId" name="employeeId" placeholder="Enter Employee ID" required oninput="populateEmployeeDetails()">
+            </div>
+            <div class="form-group">
+                <label for="employeeName">Employee Name:</label>
+                <input type="text" id="employeeName" name="employeeName" placeholder="Employee Name" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="employeeEmail">Employee Email:</label>
+                <input type="email" id="employeeEmail" name="employeeEmail" placeholder="Employee Email" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <input type="text" id="department" name="department" placeholder="Department" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="managerName">Manager Name:</label>
+                <input type="text" id="managerName" name="managerName" placeholder="Manager Name" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="businessPurpose">Business Purpose:</label>
+                <select id="businessPurpose" name="businessPurpose" required>
+                    <option value="" disabled selected>Select Business Purpose</option>
+                    <option value="Client Meeting">Client Meeting</option>
+                    <option value="Boarding">Boarding</option>
+                    <option value="Lodging">Lodging</option>
+                </select>
+            </div>
+
+            <!-- Expenses Section -->
+            <div class="form-group">
+                <label>Expenses:</label>
+            </div>
+            <div id="expenseContainer">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fromDate">From Date:</label>
+                        <input type="date" id="fromDate" name="fromDate[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toDate">To Date:</label>
+                        <input type="date" id="toDate" name="toDate[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseDetails">Details:</label>
+                        <input type="text" id="expenseDetails" name="expenseDetails[]" placeholder="Enter Details" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expensePrice">Price:</label>
+                        <input type="number" id="expensePrice" name="expensePrice[]" placeholder="Enter Price" required>
+                    </div>
+                </div>
+            </div>
+            <div class="add-btn">
+                <button type="button" id="addExpense">Add More Expenses</button>
+            </div>
+
+            <!-- Total Expenses -->
+            <div class="form-group">
+                <label for="totalExpenses">Total Expenses:</label>
+                <input type="number" id="totalExpenses" name="totalExpenses" placeholder="Enter Total Expenses" required>
+            </div>
+
+            <!-- Attach Receipt -->
+            <div class="form-group">
+                <label for="receipt">Attach Receipt:</label>
+                <div id="fileContainer">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="receipt" name="receipt[]" required>
+                        <span class="remove-file" id="removeFile">✖</span>
+                    </div>
+                </div>
+            </div>
+            <div class="add-btn">
+                <button type="button" id="addFile">Add More Files</button>
+            </div>
+
+            <!-- Employee Signature -->
+            <div class="form-group">
+                <label for="employeeSignature">Employee Signature:</label>
+                <input type="text" id="employeeSignature" name="employeeSignature" placeholder="Enter your Full Name" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-btn">
+                <button type="submit" class="submit-btn" name="send">Send for Approval</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+         // Employee data mapping
+         const employeeData = {
+            "20HP1A1201": { name: "John Doe", email: "john.doe@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1202": { name: "Jane Smith", email: "jane.smith@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1203": { name: "Mike Lee", email: "mike.lee@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1204": { name: "Emily Brown", email: "emily.brown@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1205": { name: "James Wilson", email: "james.wilson@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1206": { name: "Sarah Johnson", email: "sarah.johnson@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1207": { name: "Chris Evans", email: "chris.evans@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1208": { name: "Sophia Miller", email: "sophia.miller@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1209": { name: "Liam Davis", email: "liam.davis@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            "20HP1A1210": { name: "Olivia Garcia", email: "olivia.garcia@gmail.com", department: "Telecom", manager: "Rajasekhar" },
+            
+            "20HP1A1211": { name: "Noah Martinez", email: "noah.martinez@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1212": { name: "Emma Rodriguez", email: "emma.rodriguez@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1213": { name: "Ava Hernandez", email: "ava.hernandez@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1214": { name: "Isabella Moore", email: "isabella.moore@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1215": { name: "William Taylor", email: "william.taylor@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1216": { name: "Alexander Anderson", email: "alexander.anderson@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1217": { name: "Mia Thomas", email: "mia.thomas@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1218": { name: "Charlotte Jackson", email: "charlotte.jackson@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1219": { name: "Lucas White", email: "lucas.white@gmail.com", department: "Information Technology", manager: "Ranjith" },
+            "20HP1A1220": { name: "Amelia Harris", email: "amelia.harris@gmail.com", department: "Information Technology", manager: "Ranjith" },
+
+            "20HP1A1221": { name: "Elijah Martin", email: "elijah.martin@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1222": { name: "Mason Lee", email: "mason.lee@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1223": { name: "Harper Perez", email: "harper.perez@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1224": { name: "Evelyn Thompson", email: "evelyn.thompson@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1225": { name: "Sofia Gonzalez", email: "sofia.gonzalez@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1226": { name: "Aiden Hall", email: "aiden.hall@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1227": { name: "Lily Young", email: "lily.young@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1228": { name: "Grace Allen", email: "grace.allen@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1229": { name: "Zoey King", email: "zoey.king@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+            "20HP1A1230": { name: "Benjamin Scott", email: "benjamin.scott@gmail.com", department: "Digital Marketing", manager: "Sesha" },
+
+            "20HP1A1231": { name: "Jack Green", email: "kaneeque31@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1232": { name: "Abigail Adams", email: "abigail.adams@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1233": { name: "Emily Baker", email: "emily.baker@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1234": { name: "Michael Gonzalez", email: "michael.gonzalez@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1235": { name: "Oliver Nelson", email: "oliver.nelson@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1236": { name: "Lucas Carter", email: "lucas.carter@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1237": { name: "Samantha Mitchell", email: "samantha.mitchell@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1238": { name: "Hannah Perez", email: "hannah.perez@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1239": { name: "Ella Turner", email: "ella.turner@gmail.com", department: "Lead Generation", manager: "Sesha" },
+            "20HP1A1240": { name: "Chloe Phillips", email: "chloe.phillips@gmail.com", department: "Lead Generation", manager: "Sesha" },
+
+            "20HP1A1241": { name: "Sophia Campbell", email: "sophia.campbell@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1242": { name: "Avery Evans", email: "avery.evans@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1243": { name: "Jackson Edwards", email: "jackson.edwards@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1244": { name: "Mia Collins", email: "mia.collins@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1245": { name: "Liam Stewart", email: "liam.stewart@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1246": { name: "Grace Ramirez", email: "grace.ramirez@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1247": { name: "Ella Parker", email: "ella.parker@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1248": { name: "Jacob Murphy", email: "jacob.murphy@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1249": { name: "Zoe Bailey", email: "zoe.bailey@gmail.com", department: "Business Development", manager: "Sesha" },
+            "20HP1A1250": { name: "Mason Rivera", email: "mason.rivera@gmail.com", department: "Business Development", manager: "Sesha" }
+        };
+
+
+        // Function to populate employee details
+        function populateEmployeeDetails() {
+            const employeeIdInput = document.getElementById('employeeId').value;
+            const employeeDetails = employeeData[employeeIdInput];
+
+            if (employeeDetails) {
+                document.getElementById('employeeName').value = employeeDetails.name;
+                document.getElementById('employeeEmail').value = employeeDetails.email;
+                document.getElementById('department').value = employeeDetails.department;
+                document.getElementById('managerName').value = employeeDetails.manager;
+            } else {
+                document.getElementById('employeeName').value = '';
+                document.getElementById('employeeEmail').value = '';
+                document.getElementById('department').value = '';
+                document.getElementById('managerName').value = '';
+            }
+        }
+
+
+        // Form validation
+    const allowedFileTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml'];
+
+    document.getElementById('reimbursementForm').addEventListener('submit', function (event) {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        const fileSizeLimit = 5 * 1024 * 1024; // 5MB in bytes
+        let fileSizeExceeded = false;
+        let invalidFileType = false;
+
+        fileInputs.forEach((fileInput) => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+
+                // File type validation
+                if (!allowedFileTypes.includes(file.type)) {
+                    invalidFileType = true;
+                    alert(`File "${file.name}" is not a valid format. Please upload a PDF, JPG, JPEG, PNG, GIF, or SVG file.`);
+                    fileInput.value = ""; // Clear the invalid file input
+                    fileInput.nextElementSibling.style.display = 'none'; // Hide the cross mark
+                }
+
+                // File size validation
+                if (file.size > fileSizeLimit) {
+                    fileSizeExceeded = true;
+                    alert(`File "${file.name}" exceeds the 5MB size limit. Please choose a smaller file.`);
+                    fileInput.value = ""; // Clear the invalid file input
+                    fileInput.nextElementSibling.style.display = 'none'; // Hide the cross mark
+                }
+            }
+        });
+
+        if (fileSizeExceeded || invalidFileType) {
+            event.preventDefault(); // Prevent form submission if there's an invalid file
+        }
+
+        
+            // Other validations...
+        
+            // Employee Name Validation
+            const employeeName = document.getElementById('employeeName').value;
+            if (!/^[^\s][A-Za-z\s]{4,}$/.test(employeeName)) {
+                alert('Please enter a valid Employee Name with at least 4 characters.');
+                event.preventDefault();
+            }
+        
+            // Employee ID Validation
+            const employeeId = document.getElementById('employeeId').value;
+            if (!/^[A-Za-z0-9]{10}$/.test(employeeId)) {
+                alert('Please enter a valid Employee ID.');
+                event.preventDefault();
+            }
+        
+            // Employee Email Validation
+            const employeeEmail = document.getElementById('employeeEmail').value;
+            if (!/^[\w\.-]+@[a-zA-Z\d-]+\.[a-zA-Z]{2,}$/.test(employeeEmail)) {
+                alert('Please enter a valid email address.');
+                event.preventDefault();
+            }
+            
+            // Manager Name Validation
+            const managerName = document.getElementById('managerName').value;
+            if (!/^[^\s][A-Za-z\s]{4,}$/.test(managerName)) {
+                alert('Please enter a valid Manager Name with at least 4 characters.');
+                event.preventDefault();
+            }
+        
+            // Business Purpose Validation
+            const businessPurpose = document.getElementById('businessPurpose').value;
+            if (!/^[^\s][A-Za-z\s]{6,}$/.test(businessPurpose)) {
+                alert('Please enter a valid Business Purpose with at least 6 characters.');
+                event.preventDefault();
+            }
+        
+            // Total Expenses Validation
+            const totalExpenses = document.getElementById('totalExpenses').value;
+            if (!/^[0-9]+(\.[0-9]+)?$/.test(totalExpenses)) {
+                alert('Please enter a valid Total Expenses amount.');
+                event.preventDefault();
+            }
+        
+            // Employee Signature Validation
+            const employeeSignature = document.getElementById('employeeSignature').value;
+            if (!/^[^\s][A-Za-z\s]{8,}$/.test(employeeSignature)) {
+                alert('Please enter a valid Employee Signature with at least 8 characters.');
+                event.preventDefault();
+            }
+        });
+        
+        function capitalizeFirstLetter(input) {
+            input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
+        }
+        
+        // Event listener to dynamically calculate and update the total expenses
+        document.addEventListener('input', function (e) {
+            if (e.target && e.target.name === 'expensePrice[]') {
+                updateTotalExpenses();
+            }
+        });
+        
+        // Function to calculate and update the total expenses
+        function updateTotalExpenses() {
+            let total = 0;
+            const priceInputs = document.querySelectorAll('input[name="expensePrice[]"]');
+            priceInputs.forEach(input => {
+                const price = parseFloat(input.value) || 0;
+                total += price;
+            });
+            document.getElementById('totalExpenses').value = total.toFixed(2);
+        }
+        
+        // Dynamic addition of expense fields
+        document.getElementById('addExpense').addEventListener('click', function () {
+            const expenseContainer = document.getElementById('expenseContainer');
+            const expenseRow = document.createElement('div');
+            expenseRow.classList.add('form-row');
+            expenseRow.innerHTML = `
+                <div class="form-group">
+                    <label for="fromDate">From Date:</label>
+                    <input type="date" id="fromDate" name="fromDate[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="toDate">To Date:</label>
+                    <input type="date" id="toDate" name="toDate[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseDetails">Details:</label>
+                    <input type="text" id="expenseDetails" name="expenseDetails[]" placeholder="Enter Expense Details" required oninput="capitalizeFirstLetter(this)">
+                </div>
+                <div class="form-group">
+                    <label for="expensePrice">Price:</label>
+                    <input type="number" id="expensePrice" name="expensePrice[]" placeholder="Enter Expense Price" required>
+                </div>`;
+            expenseContainer.appendChild(expenseRow);
+        
+            // Add event listener to new price input field for automatic total calculation
+            expenseRow.querySelector('input[name="expensePrice[]"]').addEventListener('input', updateTotalExpenses);
+        });
+        
+        // Dynamic addition of file inputs
+        document.getElementById('addFile').addEventListener('click', function () {
+            const fileContainer = document.getElementById('fileContainer');
+            const fileInputWrapper = document.createElement('div');
+            fileInputWrapper.classList.add('file-input-wrapper');
+            fileInputWrapper.innerHTML = `
+                <input type="file" id="receipt" name="receipt[]" required>
+                <span class="remove-file">✖</span>`;
+            fileContainer.appendChild(fileInputWrapper);
+        });
+        
+        // Show the remove button only after a file is selected
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.type === 'file') {
+                const removeBtn = e.target.nextElementSibling;
+                if (e.target.value) {
+                    removeBtn.style.display = 'inline';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            }
+        });
+        
+        // Deselect the file instead of removing the entire input field
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-file')) {
+                const fileInput = e.target.previousElementSibling;
+                fileInput.value = ""; // Clear the selected file
+                e.target.style.display = 'none'; // Hide the cross mark
+            }
+        });
+        </script>    
+
+    </body>
+
+</html>
